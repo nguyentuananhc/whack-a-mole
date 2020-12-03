@@ -1,0 +1,37 @@
+@font-face {
+    font-family: 'SVN-Gilroy';
+    src: url('../../fonts/SVN-GilroyBold.eot');
+    src: url('../../fonts/SVN-GilroyBold.woff2') format('woff2'), url('../../fonts/SVN-GilroyBold.woff') format('woff'), url('../../fonts/SVN-GilroyBold.ttf') format('truetype'), url('../../fonts/SVN-GilroyBold.svg') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    font-family: 'SVN-Gilroy';
+    /* font-family: ‘Nunito’, sans-serif; */
+    -webkit-font-smoothing: antialiased;
+    font-size: 16px;
+    line-height: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    background-color: #001D5A;
+}
+
+* {
+    /* font-family: 'Nunito', sans-serif; */
+    /* -webkit-font-smoothing: antialiased; */
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* p {
+        opacity: 0.9;
+    } */
+}
+
+/* body { */
+
+/* background-color: #001d5b; */
+
+/* background-color: #001D5B;
+    background-image: url('../../static/img/endless-clouds.svg'); */
+
+/* } */
