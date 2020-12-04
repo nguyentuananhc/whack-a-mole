@@ -13,10 +13,10 @@ export default class MyDocument extends Document {
                         href="https://fonts.googleapis.com/css?family=Roboto:500"
                         rel="stylesheet"
                     ></link>
-                    <link
+                    {/* <link
                         rel="stylesheet"
                         href="/static/css/bootstrap.min.css"
-                    />
+                    /> */}
                     <link
                         href="/static/css/wrapper.css"
                         rel="stylesheet"

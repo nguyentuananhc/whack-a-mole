@@ -5,6 +5,7 @@ import { actions, REDUCER_NAME } from './slice'
 import { initGA, PageView, Event, setUID } from './components/Tracking'
 // import SwipeView from 'src/components/SwipeView'
 import GamePage from 'containers/Game/containers/GamePage'
+// import GamePage from 'containers/Game/containers/GamePageA'
 import StartPage from 'containers/Game/containers/StartPage'
 
 import firebase from './Firebase'
@@ -91,8 +92,8 @@ const Game = () => {
 
     return (
         <div className="game-wrapper">
-            {currentIndex === 0 && <StartPage />}
-            {currentIndex === 1 && <GamePage />}
+            {/* {currentIndex === 0 && <StartPage />} */}
+            {currentIndex === 0 && <GamePage />}
         </div>
     )
 }

@@ -54,22 +54,24 @@ function GamePage() {
 
     const [gameState, setGame] = React.useState({
         holesArr: NUMS,
-        1: 'translate(0, 110%)',
-        2: 'translate(0, 110%)',
-        3: 'translate(0, 110%)',
-        4: 'translate(0, 110%)',
-        5: 'translate(0, 110%)',
-        6: 'translate(0, 110%)',
-        7: 'translate(0, 110%)',
-        8: 'translate(0, 110%)',
-        9: 'translate(0, 110%)',
+        1: { style: 'translate(0, 110%)', type: 0 },
+        2: { style: 'translate(0, 110%)', type: 0 },
+        3: { style: 'translate(0, 110%)', type: 0 },
+        4: { style: 'translate(0, 110%)', type: 0 },
+        5: { style: 'translate(0, 110%)', type: 0 },
+        6: { style: 'translate(0, 110%)', type: 0 },
+        7: { style: 'translate(0, 110%)', type: 0 },
+        8: { style: 'translate(0, 110%)', type: 0 },
+        9: { style: 'translate(0, 110%)', type: 0 },
         gameHasStarted: false,
         moleHasBeenWhacked: false,
         score: 0,
         lastMole: [],
+        lastBoom: [],
         display: 'false',
         gameOver: 'none',
         life: 3,
+        timeUp: true,
     })
 
     const setGameState = (state) => {
@@ -79,18 +81,72 @@ function GamePage() {
         }))
     }
 
+    const randomTime = (min, max) => {
+        return Math.round(Math.random() * (max - min) + min)
+    }
+
+    const randomHole = (holes) => {
+        const idx = Math.floor(Math.random() * gameState.holesArr.length)
+        const hole = holes[idx]
+
+        if (hole === gameState.lastMole) {
+            console.log('Same one')
+            return randomHole(holes)
+        }
+
+        setGameState({
+            lastMole: hole,
+        })
+
+        return hole
+    }
+
+    const poop = () => {
+        const time = randomTime(400, 800)
+        const hole = randomHole(gameState.holesArr)
+        setGameState({
+            [hole]: { style: 'translate(0, 15%)', type: 0 },
+        })
+        setTimeout(() => {
+            clearMoles()
+            if (!gameState.timeUp) poop()
+        }, time)
+    }
+
+    const peep = () => {
+        const time = randomTime(400, 800)
+        const hole = randomHole(gameState.holesArr)
+        setGameState({
+            [hole]: { style: 'translate(0, 15%)', type: 1 },
+        })
+        setTimeout(() => {
+            setGameState({
+                [hole]: { style: 'translate(0, 110%)', type: 1 },
+            })
+            if (!gameState.timeUp) peep()
+        }, time)
+    }
+
     const clearMoles = () => {
         for (let value in gameState) {
             if (!isNaN(value)) {
                 setGameState({
-                    [value]: 'translate(0, 110%)',
+                    [value]: { style: 'translate(0, 110%)', type: 0 },
                 })
             }
         }
     }
 
+    React.useEffect(() => {
+        if (!gameState.timeUp) {
+            peep()
+            // poop()
+        }
+    }, [gameState.timeUp])
+
     const displayMoles = () => {
         clearMoles()
+
         let randArr = [
             ...gameState.holesArr.sort(function () {
                 return Math.random() - 0.5
@@ -101,9 +157,9 @@ function GamePage() {
         const restMoles = randArr.slice(3)
 
         setGameState({
-            [threeFirstMoles[0]]: 'translate(0, 15%)',
-            [threeFirstMoles[1]]: 'translate(0, 15%)',
-            [threeFirstMoles[2]]: 'translate(0, 15%)',
+            [threeFirstMoles[0]]: { style: 'translate(0, 15%)', type: 0 },
+            [threeFirstMoles[1]]: { style: 'translate(0, 15%)', type: 0 },
+            [threeFirstMoles[2]]: { style: 'translate(0, 15%)', type: 1 },
             lastMole: threeFirstMoles,
             holesArr: [...restMoles].concat(gameState.lastMole),
         })
@@ -126,7 +182,13 @@ function GamePage() {
 
     return (
         <div className="main-container">
-            {/* <button onClick={timeOut}>start</button> */}
+            <button
+                onClick={() => {
+                    setGameState({ timeUp: false })
+                }}
+            >
+                start
+            </button>
             <div>{count}</div>
             <div className="game">{createMoleHoles()}</div>
         </div>

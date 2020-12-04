@@ -73,6 +73,17 @@
     transition: all 0.4s;
     cursor: pointer;
   }
+
+  .game__mole_another {
+    background-image: url('https://studio.code.org/media?u=https%3A%2F%2Flh3.ggpht.com%2FHhQVHSiOobcjNWrWTRFVDtbZ9N1wXqh_Fm5M_l_1Xqr1YLlw_ZCjAdlf1IzZR0WqsB8v%3Dw170');
+    background-size: 50px;
+    background-repeat: no-repeat;
+    background-position: top;
+    height: 100%;
+    transform: translate(0, 50%);
+    transition: all 0.4s;
+    cursor: pointer;
+  }
   
   .game__whack {
     width: 100%;
