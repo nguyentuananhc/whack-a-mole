@@ -7,6 +7,7 @@ const gameReducer = createSlice({
     initialState: {
         userName: 'User Name',
         currentIndex: 0,
+        score: 0,
     },
     reducers: {
         saveUserNameRequest: (state, actions) => {
@@ -14,6 +15,9 @@ const gameReducer = createSlice({
         },
         setCurrentIndexRequest: (state, actions) => {
             state.currentIndex = actions?.payload
+        },
+        saveScoreRequest: (state, actions) => {
+            state.score = actions?.payload
         },
     },
 })

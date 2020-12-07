@@ -1,12 +1,8 @@
-import { useDispatch } from 'react-redux'
 import { motion } from 'framer-motion'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Button from 'containers/Game/components/Button'
-import { actions } from 'containers/Game/slice'
-
-import './index.scss'
-
-let easing = [0.6, -0.05, 0.01, 0.99]
+import { actions, REDUCER_NAME } from 'containers/Game/slice'
 
 const stagger = {
     animate: {
@@ -16,24 +12,11 @@ const stagger = {
     },
 }
 
-const fadeInUp = {
-    initial: {
-        y: 60,
-        opacity: 0,
-        transition: { duration: 0.6, ease: easing },
-    },
-    animate: {
-        y: 0,
-        opacity: 1,
-        transition: {
-            duration: 0.6,
-            ease: easing,
-        },
-    },
-}
-
-function StartPage() {
+function ResultPage() {
     const dispatch = useDispatch()
+    const { currentIndex, isShowMultiShare, score } = useSelector(
+        (state) => state[REDUCER_NAME]
+    )
 
     return (
         <motion.div
@@ -42,13 +25,14 @@ function StartPage() {
             animate="animate"
             className="page-wrapper start-page-wrapper"
         >
+            <div>Điểm của bạn: {score}</div>
             <motion.div className="page-content" variants={stagger}>
                 <Button
                     onClick={() => {
                         dispatch(actions.setCurrentIndexRequest(1))
                     }}
                 >
-                    Chơi ngay
+                    Chơi Lại
                 </Button>
             </motion.div>
             <div className="page-start"></div>
@@ -56,4 +40,4 @@ function StartPage() {
     )
 }
 
-export default StartPage
+export default ResultPage

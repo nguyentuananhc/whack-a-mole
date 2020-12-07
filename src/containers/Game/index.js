@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { actions, REDUCER_NAME } from './slice'
@@ -7,6 +7,9 @@ import { initGA, PageView, Event, setUID } from './components/Tracking'
 import GamePage from 'containers/Game/containers/GamePage'
 // import GamePage from 'containers/Game/containers/GamePageA'
 import StartPage from 'containers/Game/containers/StartPage'
+import ResultPage from 'containers/Game/containers/ResultPage'
+
+import useAudio from 'containers/Game/helper/useAudio'
 
 import firebase from './Firebase'
 
@@ -17,6 +20,12 @@ const Game = () => {
     const { currentIndex, isShowMultiShare } = useSelector(
         (state) => state[REDUCER_NAME]
     )
+
+    // const [playing, toggle] = useAudio('/static/song.mp3')
+
+    // useEffect(() => {
+    //     if (!playing) toggle()
+    // }, [playing])
 
     useEffect(() => {
         // initGA('UA-173271646-1')
@@ -92,8 +101,9 @@ const Game = () => {
 
     return (
         <div className="game-wrapper">
-            {/* {currentIndex === 0 && <StartPage />} */}
-            {currentIndex === 0 && <GamePage />}
+            {currentIndex === 0 && <StartPage />}
+            {currentIndex === 1 && <GamePage />}
+            {currentIndex === 2 && <ResultPage />}
         </div>
     )
 }

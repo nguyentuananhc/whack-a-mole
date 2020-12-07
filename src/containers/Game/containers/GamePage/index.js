@@ -8,11 +8,16 @@ import './index.scss'
 
 let NUMS = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-const TICK = [600, 800, 1000]
+const TICK = [400, 600, 800, 1000]
 
-const useAnimationFrame = (callback, count) => {
-    // Use useRef for mutable variables that we want to persist
-    // without triggering a re-render on their change
+const LIST_ITEM = [
+    { name: 'ITEM', pct: 70, type: 1 },
+    { name: 'BOOM', pct: 30, type: 0 },
+]
+
+const expanded = LIST_ITEM.flatMap((item) => Array(item.pct).fill(item))
+
+const useAnimationFrame = (callback, count, isGameOver) => {
     const requestRef = React.useRef()
     let nextTimeToTick = Date.now()
     const [index, setIndex] = React.useState(2)
@@ -27,9 +32,14 @@ const useAnimationFrame = (callback, count) => {
     }
 
     React.useEffect(() => {
-        if (count > 5 && count < 20) setIndex(1)
-        if (count > 20) setIndex(0)
-        if (count === 30) cancelAnimationFrame(requestRef.current)
+        if (isGameOver) cancelAnimationFrame(requestRef.current)
+    }, [isGameOver])
+
+    React.useEffect(() => {
+        if (count > 10 && count < 20) setIndex(3)
+        if (count > 20 && count < 30) setIndex(2)
+        if (count > 30) setIndex(1)
+        if (count === 40) cancelAnimationFrame(requestRef.current)
     }, [count])
 
     React.useEffect(() => {
@@ -42,37 +52,65 @@ function GamePage() {
     const dispatch = useDispatch()
     const [count, setCount] = React.useState(0)
 
-    useAnimationFrame(() => {
-        // Pass on a function to the setter of the state
-        // to make sure we always have the latest state
-        setCount((prevCount) => (prevCount += 1))
-    }, count)
-
-    React.useEffect(() => {
-        if (count) displayMoles()
-    }, [count])
-
     const [gameState, setGame] = React.useState({
         holesArr: NUMS,
-        1: { style: 'translate(0, 110%)', type: 0 },
-        2: { style: 'translate(0, 110%)', type: 0 },
-        3: { style: 'translate(0, 110%)', type: 0 },
-        4: { style: 'translate(0, 110%)', type: 0 },
-        5: { style: 'translate(0, 110%)', type: 0 },
-        6: { style: 'translate(0, 110%)', type: 0 },
-        7: { style: 'translate(0, 110%)', type: 0 },
-        8: { style: 'translate(0, 110%)', type: 0 },
-        9: { style: 'translate(0, 110%)', type: 0 },
-        gameHasStarted: false,
+        1: { isShowUp: false, type: 0 },
+        2: { isShowUp: false, type: 0 },
+        3: { isShowUp: false, type: 0 },
+        4: { isShowUp: false, type: 0 },
+        5: { isShowUp: false, type: 0 },
+        6: { isShowUp: false, type: 0 },
+        7: { isShowUp: false, type: 0 },
+        8: { isShowUp: false, type: 0 },
+        9: { isShowUp: false, type: 0 },
+        gameOver: false,
         moleHasBeenWhacked: false,
         score: 0,
         lastMole: [],
         lastBoom: [],
         display: 'false',
-        gameOver: 'none',
+        gameOver: false,
         life: 3,
         timeUp: true,
     })
+
+    const clearMoles = () => {
+        for (let value in gameState) {
+            if (!isNaN(value)) {
+                setGameState({
+                    [value]: { ...gameState[value], isShowUp: false },
+                })
+            }
+        }
+    }
+
+    useAnimationFrame(
+        () => {
+            setCount((prevCount) => (prevCount += 1))
+        },
+        count,
+        gameState.gameOver
+    )
+
+    React.useEffect(() => {
+        if (count) displayMoles()
+        if ([5, 20, 30].includes(count)) {
+            clearMoles()
+        }
+    }, [count])
+
+    React.useEffect(() => {
+        if (gameState.life === 0 || count === 40) {
+            setGameState({ gameOver: true })
+        }
+    }, [gameState.life, count])
+
+    React.useEffect(() => {
+        if (gameState.gameOver) {
+            dispatch(actions.saveScoreRequest(gameState.score))
+            dispatch(actions.setCurrentIndexRequest(2))
+        }
+    }, [gameState.gameOver])
 
     const setGameState = (state) => {
         setGame((prev) => ({
@@ -81,72 +119,8 @@ function GamePage() {
         }))
     }
 
-    const randomTime = (min, max) => {
-        return Math.round(Math.random() * (max - min) + min)
-    }
-
-    const randomHole = (holes) => {
-        const idx = Math.floor(Math.random() * gameState.holesArr.length)
-        const hole = holes[idx]
-
-        if (hole === gameState.lastMole) {
-            console.log('Same one')
-            return randomHole(holes)
-        }
-
-        setGameState({
-            lastMole: hole,
-        })
-
-        return hole
-    }
-
-    const poop = () => {
-        const time = randomTime(400, 800)
-        const hole = randomHole(gameState.holesArr)
-        setGameState({
-            [hole]: { style: 'translate(0, 15%)', type: 0 },
-        })
-        setTimeout(() => {
-            clearMoles()
-            if (!gameState.timeUp) poop()
-        }, time)
-    }
-
-    const peep = () => {
-        const time = randomTime(400, 800)
-        const hole = randomHole(gameState.holesArr)
-        setGameState({
-            [hole]: { style: 'translate(0, 15%)', type: 1 },
-        })
-        setTimeout(() => {
-            setGameState({
-                [hole]: { style: 'translate(0, 110%)', type: 1 },
-            })
-            if (!gameState.timeUp) peep()
-        }, time)
-    }
-
-    const clearMoles = () => {
-        for (let value in gameState) {
-            if (!isNaN(value)) {
-                setGameState({
-                    [value]: { style: 'translate(0, 110%)', type: 0 },
-                })
-            }
-        }
-    }
-
-    React.useEffect(() => {
-        if (!gameState.timeUp) {
-            peep()
-            // poop()
-        }
-    }, [gameState.timeUp])
-
     const displayMoles = () => {
         clearMoles()
-
         let randArr = [
             ...gameState.holesArr.sort(function () {
                 return Math.random() - 0.5
@@ -157,12 +131,49 @@ function GamePage() {
         const restMoles = randArr.slice(3)
 
         setGameState({
-            [threeFirstMoles[0]]: { style: 'translate(0, 15%)', type: 0 },
-            [threeFirstMoles[1]]: { style: 'translate(0, 15%)', type: 0 },
-            [threeFirstMoles[2]]: { style: 'translate(0, 15%)', type: 1 },
+            [threeFirstMoles[0]]: { isShowUp: true, type: 1 },
+            [threeFirstMoles[1]]: {
+                isShowUp: true,
+                type: 1,
+            },
+            [threeFirstMoles[2]]: {
+                isShowUp: true,
+                type: 0,
+            },
             lastMole: threeFirstMoles,
             holesArr: [...restMoles].concat(gameState.lastMole),
         })
+    }
+
+    const lockOutClick = () => {
+        window.setTimeout(() => {
+            setGameState({ moleHasBeenWhacked: false })
+        }, 350)
+    }
+
+    const addToScore = (e, gameState, i) => {
+        if (gameState.moleHasBeenWhacked) {
+            return
+        }
+        let target = e.target
+        target.parentNode.classList.add('game__cross')
+        target.classList.add('no-background')
+        lockOutClick()
+        const type = gameState[i].type
+        const update =
+            type === 1
+                ? { score: gameState.score + 1 }
+                : {
+                      life: gameState.life - 1,
+                  }
+        setGameState({
+            ...update,
+            moleHasBeenWhacked: true,
+        })
+        window.setTimeout(function () {
+            target.parentNode.classList.remove('game__cross')
+            target.classList.remove('no-background')
+        }, 500)
     }
 
     const createMoleHoles = () => {
@@ -172,7 +183,7 @@ function GamePage() {
                 <MoleHole
                     key={i}
                     context={gameState}
-                    onClick={() => {}}
+                    onClick={(e) => addToScore(e, gameState, i)}
                     holeNumber={i}
                 />
             )
@@ -182,14 +193,12 @@ function GamePage() {
 
     return (
         <div className="main-container">
-            <button
-                onClick={() => {
-                    setGameState({ timeUp: false })
-                }}
-            >
-                start
-            </button>
-            <div>{count}</div>
+            <div>
+                {/* <div>{count}</div> */}
+                <div>LIFE:{gameState.life}</div>
+                <div>SCORE:{gameState.score}</div>
+            </div>
+
             <div className="game">{createMoleHoles()}</div>
         </div>
     )
